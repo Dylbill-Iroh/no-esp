@@ -3,6 +3,21 @@
 #include "RE/Skyrim.h"
 #include "SKSE/SKSE.h"
 
+// The xmake build of CommonLibSSE-NG logs through std::format (SPDLOG_USE_STD_FORMAT), which has no formatter
+// for RE::BSFixedString (the old vcpkg build used fmt, which CommonLib has one for). Delete this if a newer
+// CommonLibSSE-NG adds its own and it fails as a duplicate.
+#include <format>
+template <>
+struct std::formatter<RE::BSFixedString, char> : std::formatter<std::string_view, char>
+{
+	template <class FormatContext>
+	auto format(const RE::BSFixedString& a_str, FormatContext& a_ctx) const
+	{
+		const char* p = a_str.c_str();
+		return std::formatter<std::string_view, char>::format(p ? std::string_view{ p } : std::string_view{}, a_ctx);
+	}
+};
+
 #include <algorithm>
 #include <array>
 #include <atomic>
@@ -40,7 +55,6 @@
 #pragma warning(pop)
 
 namespace logger = SKSE::log;
-namespace WinAPI = SKSE::WinAPI;
 
 using namespace std::literals;
 

@@ -397,13 +397,15 @@ namespace NoESP {
             }
         }
 
-        static void CheckForObjectsToAttachScriptsToForObjectsInRange(RE::TESObjectREFR* center, float radius) {
-            RE::TES::GetSingleton()->ForEachReferenceInRange(center, radius, [](RE::TESObjectREFR& ref){
-                TryBindReference(ref);
+		static void CheckForObjectsToAttachScriptsToForObjectsInRange(RE::TESObjectREFR* center, float radius) {
+            RE::TES::GetSingleton()->ForEachReferenceInRange(center, radius, [](RE::TESObjectREFR* ref){
+                if (ref) {
+                    TryBindReference(*ref);
+                }
                 return RE::BSContainer::ForEachResult::kContinue;
             });
         }
-
+		
         static void CheckForObjectsToAttachScriptsToForObjectsInRangeOfPlayer(float radius) {
             CheckForObjectsToAttachScriptsToForObjectsInRange(RE::PlayerCharacter::GetSingleton(), radius);
         }
